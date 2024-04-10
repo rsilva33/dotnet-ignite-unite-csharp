@@ -24,9 +24,21 @@ public class ExceptionFilter : IExceptionFilter
 
     private void HandleProjectException(ExceptionContext context)
     {
-        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-        context.Result = new ObjectResult(new ResponseErrorJson(context.Exception.Message));
+        if(context.Exception is NotFoundException)
+        {
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            context.Result = new NotFoundObjectResult(new ResponseErrorJson(context.Exception.Message));
+        }
+        else if (context.Exception is ErrorOnValidationException) 
+        {
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Result = new BadRequestObjectResult(new ResponseErrorJson(context.Exception.Message));
+        }
+        else if (context.Exception is ConflictException)
+        {
+            context.HttpContext.Response.StatusCode = StatusCodes.Status409Conflict;
+            context.Result = new ConflictObjectResult(new ResponseErrorJson(context.Exception.Message));
+        }
     }
 
     private void ThrowUnknownError(ExceptionContext context)

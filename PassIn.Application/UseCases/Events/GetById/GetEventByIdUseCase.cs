@@ -3,17 +3,20 @@ using PassIn.Exceptions;
 using PassIn.Infrastructure.Contexts;
 
 namespace PassIn.Application.UseCases.Events.GetById;
+
 public class GetEventByIdUseCase
 {
+    private readonly PassInDbContext _context;
+
+    public GetEventByIdUseCase() => _context = new PassInDbContext();
+
     public ResponseEventJson Execute(Guid id)
     {
-        var dbContext = new PassInDbContext();
-
         //var entity = dbContext.Events.FirstOrDefault(ev => ev.Id == id);
-        var entity = dbContext.Events.Find(id);
+        var entity = _context.Events.Find(id);
 
         if (entity is null)
-            throw new PassInException("An event with this id dont exist.");
+            throw new NotFoundException("An event with this id does not exist.");
 
         return new ResponseEventJson
         {
