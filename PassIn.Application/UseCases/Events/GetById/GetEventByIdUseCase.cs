@@ -1,4 +1,5 @@
-﻿using PassIn.Communication.Responses;
+﻿using Microsoft.EntityFrameworkCore;
+using PassIn.Communication.Responses;
 using PassIn.Exceptions;
 using PassIn.Infrastructure.Contexts;
 
@@ -13,7 +14,7 @@ public class GetEventByIdUseCase
     public ResponseEventJson Execute(Guid id)
     {
         //var entity = dbContext.Events.FirstOrDefault(ev => ev.Id == id);
-        var entity = _context.Events.Find(id);
+        var entity = _context.Events.Include(ev => ev.Attendees).FirstOrDefault(ev => ev.Id == id);
 
         if (entity is null)
             throw new NotFoundException("An event with this id does not exist.");
@@ -24,7 +25,7 @@ public class GetEventByIdUseCase
             Title = entity.Title,
             Details = entity.Details,
             MaximumAttendees = entity.Maximum_Attendees,
-            AttendeesAmount = -1
+            AttendeesAmount = entity.Attendees.Count(),
         };
     }
 }

@@ -11,6 +11,7 @@ public class RegisterAttendeeOnEventUseCase
     private readonly PassInDbContext _context;
 
     public RegisterAttendeeOnEventUseCase() => _context = new PassInDbContext();
+
     public ResponseRegisteredJson Execute(Guid eventId, RequestRegisterEventJson request)
     {
         Validate(eventId, request);
